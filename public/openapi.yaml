@@ -1,0 +1,287 @@
+openapi: 3.0.0
+info:
+  title: Hackathon API
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8000/api
+  - url: https://api.domainkamu.com/api
+
+paths:
+  /register:
+    post:
+      tags: [Auth]
+      summary: Register user baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name: { type: string, example: John Doe }
+                address: { type: string, example: "Jl. Merdeka No. 123" }
+                province: { type: string, example: Jawa Barat }
+                city: { type: string, example: Bandung }
+                postal_code: { type: string, example: "40123" }
+                email: { type: string, format: email, example: john@example.com }
+                password: { type: string, format: password, example: secret123 }
+                phone_number: { type: string, example: "08123456789" }
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              example:
+                user:
+                  id: 1
+                  full_name: John Doe
+                  email: john@example.com
+                  role: member
+                  status: active
+                token: "1|abcdef123..."
+
+  /login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email, example: john@example.com }
+                password: { type: string, format: password, example: secret123 }
+      responses:
+        "200":
+          description: Login success
+          content:
+            application/json:
+              example:
+                user:
+                  id: 1
+                  name: John Doe
+                  email: john@example.com
+                  role: member
+                token: "1|abcdef123..."
+
+  /logout:
+    post:
+      tags: [Auth]
+      summary: Logout user (butuh token)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logout success
+          content:
+            application/json:
+              example:
+                message: Logged out
+
+  /campaigns:
+    get:
+      tags: [Campaigns]
+      summary: List semua campaign
+      responses:
+        "200":
+          description: Daftar campaign
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: HPZ Crew Kickoff
+                  description: Recruitment & weekly challenge
+                  status: active
+
+  /campaigns/{id}:
+    get:
+      tags: [Campaigns]
+      summary: Detail campaign
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Campaign detail
+          content:
+            application/json:
+              example:
+                id: 1
+                name: HPZ Crew Kickoff
+                description: Recruitment & weekly challenge
+                challenges:
+                  - id: 1
+                    name: Motor Pride of the Week
+                    type: weekly
+                    base_points: 10
+                    status: active
+
+  /leaderboard:
+    get:
+      tags: [Leaderboard]
+      summary: Leaderboard global
+      responses:
+        "200":
+          description: List leaderboard
+          content:
+            application/json:
+              example:
+                - user_id: 2
+                  name: Member 1
+                  points: 50
+
+  /leaderboard/weekly:
+    get:
+      tags: [Leaderboard]
+      summary: Leaderboard mingguan
+      responses:
+        "200":
+          description: Weekly leaderboard
+
+  /leaderboard/custom:
+    get:
+      tags: [Leaderboard]
+      summary: Leaderboard custom date range
+      parameters:
+        - in: query
+          name: start
+          schema: { type: string, format: date, example: 2025-09-01 }
+        - in: query
+          name: end
+          schema: { type: string, format: date, example: 2025-09-30 }
+      responses:
+        "200":
+          description: Custom leaderboard
+
+  /challenges/{id}/submissions:
+    post:
+      tags: [Submissions]
+      summary: Submit entry ke challenge
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platform: { type: string, enum: [instagram, tiktok], example: tiktok }
+                content_url: { type: string, example: "https://tiktok.com/@user/video/123456" }
+                caption: { type: string, example: "My riding challenge entry 🚀" }
+      responses:
+        "201":
+          description: Submission created
+          content:
+            application/json:
+              example:
+                id: 21
+                user_id: 11
+                challenge_id: 1
+                platform: tiktok
+                content_url: "https://tiktok.com/@user/video/123456"
+                caption: "My riding challenge entry 🚀"
+                status: submitted
+    get:
+      tags: [Submissions]
+      summary: List submissions by challenge
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: List submissions
+
+  /submissions/{id}/approve:
+    post:
+      tags: [Submissions]
+      summary: Approve submission (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Submission approved
+          content:
+            application/json:
+              example: { ok: true }
+
+  /rewards:
+    get:
+      tags: [Rewards]
+      summary: List rewards
+      responses:
+        "200":
+          description: Reward list
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: Exclusive Jacket
+                  points_cost: 100
+                  stock: 5
+                  is_active: true
+
+  /rewards/{id}/redeem:
+    post:
+      tags: [Rewards]
+      summary: Redeem reward
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "201":
+          description: Reward redeemed
+          content:
+            application/json:
+              example:
+                ok: true
+                redemption_id: 5
+                status: requested
+
+  /redemptions:
+    get:
+      tags: [Rewards]
+      summary: Lihat reward yang pernah diredeem user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List redemptions
+          content:
+            application/json:
+              example:
+                - id: 5
+                  reward:
+                    id: 1
+                    name: Exclusive Jacket
+                  points_spent: 100
+                  status: requested
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
