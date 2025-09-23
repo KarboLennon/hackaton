@@ -8,6 +8,8 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\RewardController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\MetricsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +51,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/my/submissions', [SubmissionController::class, 'mine']);
 
     // User submissions
     Route::post('/challenges/{id}/submissions', [SubmissionController::class, 'store']);
@@ -67,7 +70,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('isAdmin')->group(function () {
 
         // Submissions approval
+        Route::get('/submissions', [SubmissionController::class, 'index']);
         Route::post('/submissions/{id}/approve', [SubmissionController::class, 'approve']);
+        Route::post('/submissions/{id}/reject', [SubmissionController::class, 'reject']);
+
+        // User
+        Route::get('/users', [UserController::class, 'index']);
+
+        Route::get('/metrics/summary', [MetricsController::class, 'summary']);
+        Route::get('/metrics/activity-series', [MetricsController::class, 'activitySeries']);
+        Route::get('/metrics/top-creators', [MetricsController::class, 'topCreators']);
 
         // Campaign management
         Route::post('/campaigns', [CampaignController::class, 'store']);
@@ -81,4 +93,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/challenges/{id}', [ChallengeController::class, 'destroy']);
         Route::patch('/challenges/{id}/status', [ChallengeController::class, 'setStatus']);
     });
+
+
 });

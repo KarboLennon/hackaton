@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*','http://localhost:4321'],
+    'allowed_origins' => ['*','http://localhost:4321','https://api.muchtaralianwar.com'],
 
     'allowed_origins_patterns' => [],
 
