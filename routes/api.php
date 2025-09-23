@@ -23,6 +23,10 @@ Route::prefix('campaigns')->group(function () {
     Route::get('/{id}', [CampaignController::class, 'show'])->middleware('throttle:60,1');
 });
 
+Route::get('/rewards', [RewardController::class, 'index']);
+Route::get('/rewards/categories', [RewardController::class, 'categories']);
+Route::get('/rewards/{id}', [RewardController::class, 'show']);
+
 // Challenges (public)
 Route::prefix('challenges')->group(function () {
     Route::get('/', [ChallengeController::class, 'index'])->middleware('throttle:60,1');
@@ -52,16 +56,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/my/submissions', [SubmissionController::class, 'mine']);
+    Route::get('/redemptions', [\App\Http\Controllers\RewardController::class, 'myRedemptions']);
+    Route::post('/rewards/{id}/redeem', [\App\Http\Controllers\RewardController::class, 'redeem'])->middleware('isActive');
 
     // User submissions
     Route::post('/challenges/{id}/submissions', [SubmissionController::class, 'store']);
-
-    // Rewards (hanya aktif user)
-    Route::middleware('isActive')->group(function () {
-        Route::post('/rewards/{id}/redeem', [RewardController::class, 'redeem']);
-        Route::get('/redemptions', [RewardController::class, 'myRedemptions']);
-    });
-
     /*
     |--------------------------------------------------------------------------
     | Admin-only Routes
@@ -92,6 +91,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/challenges/{id}', [ChallengeController::class, 'update']);
         Route::delete('/challenges/{id}', [ChallengeController::class, 'destroy']);
         Route::patch('/challenges/{id}/status', [ChallengeController::class, 'setStatus']);
+
+        // Reward management
+        Route::post('/rewards', [RewardController::class, 'store']);
+        Route::put('/rewards/{id}', [RewardController::class, 'update']);
+        Route::delete('/rewards/{id}', [RewardController::class, 'destroy']);
     });
 
 

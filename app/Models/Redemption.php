@@ -3,19 +3,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Redemption extends Model
 {
-    protected $table = 'detail_redemptions';
-    protected $fillable = ['user_id','reward_id','points_spent','status','shipping_info','approved_at'];
+    // Izinkan semua kolom yang dipakai controller
+    protected $fillable = [
+        'user_id',
+        'reward_id',
+        'status',
+        'points_spent',
+        'voucher_code',
+        'expires_at',
+    ];
 
-    public function user()
+    // Biar serialize tanggalnya rapi
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function reward()
+    public function reward(): BelongsTo
     {
-        return $this->belongsTo(Reward::class);
+        return $this->belongsTo(Reward::class, 'reward_id');
     }
 }
