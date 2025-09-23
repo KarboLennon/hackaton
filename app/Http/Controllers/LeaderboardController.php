@@ -63,3 +63,4 @@ class LeaderboardController extends Controller
         return $rows;
     }
 }
+    

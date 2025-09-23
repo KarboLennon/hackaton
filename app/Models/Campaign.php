@@ -2,19 +2,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Campaign extends Model
 {
     protected $table = 'm_campaigns';
-    protected $fillable = ['name','description','start_date','end_date','status'];
+    protected $fillable = [
+        'name',
+        'description',
+        'status',    
+        'start_at',   
+        'end_at',     
+    ];
 
-    public function challenges()
+    protected $casts = [
+        'start_at' => 'datetime',
+        'end_at'   => 'datetime',
+    ];
+    public function challenges(): HasMany
     {
-        return $this->hasMany(Challenge::class);
+        return $this->hasMany(Challenge::class, 'campaign_id', 'id');
     }
-
-    public function funnelEvents()
+    public function scopeActive($q)
     {
-        return $this->hasMany(FunnelEvent::class);
+        return $q->where('status', 'active');
     }
 }
