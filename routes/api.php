@@ -39,9 +39,6 @@ Route::get('/leaderboard', [LeaderboardController::class, 'index'])->middleware(
 Route::get('/leaderboard/weekly', [LeaderboardController::class, 'weekly'])->middleware('throttle:60,1');
 Route::get('/leaderboard/custom', [LeaderboardController::class, 'custom'])->middleware('throttle:60,1');
 
-// Rewards (lihat daftar hadiah)
-Route::get('/rewards', [RewardController::class, 'index'])->middleware('throttle:60,1');
-
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);

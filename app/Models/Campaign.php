@@ -11,13 +11,14 @@ class Campaign extends Model
         'name',
         'description',
         'status',
-        'start_at',
-        'end_at',
+        'start_date',
+        'end_date',
+        'image_path',
     ];
 
     protected $casts = [
-        'start_at' => 'datetime',
-        'end_at' => 'datetime',
+        'start_date' => 'date',
+        'end_date'   => 'date',
     ];
     public function challenges(): HasMany
     {

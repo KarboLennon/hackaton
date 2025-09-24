@@ -20,6 +20,7 @@ class Challenge extends Model
         'base_points',
         'rules',       
         'status',      
+        'image_path'
     ];
 
     protected $casts = [

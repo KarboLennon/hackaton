@@ -19,15 +19,6 @@ class RewardController extends Controller
         return RewardCategory::select('id', 'name')->orderBy('name')->get();
     }
 
-    /**
-     * PUBLIC: list rewards
-     * Query:
-     * - category_id=...
-     * - min_points=...
-     * - max_points=...
-     * - sort=points_asc|points_desc
-     * - per_page=... (default 20; 0/all = non-paginated)
-     */
     public function index(Request $r)
     {
         $q = Reward::query()->with('category');
@@ -63,16 +54,7 @@ class RewardController extends Controller
         return Reward::with('category')->findOrFail($id);
     }
 
-    /**
-     * ADMIN: create reward (multipart/form-data)
-     * Fields:
-     * - title (string, required)
-     * - description (string, optional)
-     * - points_cost (int, required)
-     * - stock (int|null)
-     * - category_id (int|null, exists:reward_categories,id)
-     * - image (file, optional: jpg/png/webp <= 2MB)
-     */
+
     public function store(Request $r)
     {
         $data = $r->validate([
